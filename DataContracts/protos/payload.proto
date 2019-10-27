@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package DataContracts;
+
+message Payload {
+    string Key = 1;
+    string Value = 2;
+    string ProducerId = 3;
+}
