@@ -5,7 +5,7 @@ namespace Subscriber
 {
     class Program
     {
-        public static string ConsumerId = Guid.NewGuid().ToString();
+        public static Guid ConsumerId = Guid.NewGuid();
 
         static void Main(string[] args)
         {
@@ -14,7 +14,8 @@ namespace Subscriber
             Parser.Default.ParseArguments<Options>(args)
                 .WithParsed(o =>
                 {
-                    var consumer = new Consumer(o.Topic, o.ConsumerGroup, ConsumerId);
+                    var settings = Settings.Create(ConsumerId, o.ConsumerGroup, o.Topic, o.Brokers);
+                    var consumer = new Consumer(settings);
                     consumer.StartConsuming();
                 });
         }

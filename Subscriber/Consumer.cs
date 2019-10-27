@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Confluent.Kafka;
@@ -7,24 +6,15 @@ using DataContracts;
 
 namespace Subscriber
 {
-    public class Consumer
+    internal class Consumer
     {
-        private readonly string _topic;
-        private readonly string _consumerId;
+        private readonly Settings _settings;
         private readonly ConsumerConfig _config;
 
-        public Consumer(string topic, string consumerGroup, string consumerId)
+        public Consumer(Settings settings)
         {
-            _topic = topic;
-            _consumerId = consumerId;
-
-            _config = new ConsumerConfig(new Dictionary<string, string>
-            {
-                { "group.id", consumerGroup },
-                { "bootstrap.servers", "localhost:9092" },
-                { "enable.auto.commit", "false" },
-                { "metadata.max.age.ms", "1000" }
-            });
+            _settings = settings;
+            _config = _settings.AsConsumerConfig();
         }
 
         public void StartConsuming()
@@ -36,7 +26,7 @@ namespace Subscriber
             {
                 try
                 {
-                    consumer.Subscribe(_topic);
+                    consumer.Subscribe(_settings.Topic);
 
                     while (true)
                     {
@@ -55,7 +45,7 @@ namespace Subscriber
 
         private void Save(string key, Payload payload)
         {
-            string file = $"output\\{key}-{_consumerId}.txt";
+            string file = $"output\\{key}-{_settings.ConsumerId}.txt";
             using TextWriter writer = File.AppendText(file);
             writer.WriteLine(payload.Value);
         }

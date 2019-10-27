@@ -14,7 +14,8 @@ namespace Publisher
             Parser.Default.ParseArguments<Options>(args)
                 .WithParsed(o =>
                 {
-                    var producer = new Producer(ProducerId, o.Topic, o.From, o.To);
+                    var settings = Settings.Create(ProducerId, o.Topic, o.Brokers);
+                    var producer = new Producer(settings, o.From, o.To);
                     producer.StartProducing();
 
                     Console.WriteLine("All producers have finished");

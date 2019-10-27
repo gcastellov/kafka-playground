@@ -7,26 +7,19 @@ using DataContracts;
 
 namespace Publisher
 {
-    public class Producer
+    internal class Producer
     {
-        private readonly Guid _producerId;
-        private readonly string _topic;
+        private readonly Settings _settings;
+        private readonly ProducerConfig _config;
         private readonly int _from;
         private readonly int _to;
-        private readonly ProducerConfig _config;
 
-        public Producer(Guid producerId, string topic, int from, int to)
+        public Producer(Settings settings, int from, int to)
         {
-            _producerId = producerId;
-            _topic = topic;
+            _settings = settings;
+            _config = _settings.AsProducerConfig();
             _from = from;
             _to = to;
-
-            _config = new ProducerConfig
-            {
-                BootstrapServers = "localhost:9092",
-                MessageTimeoutMs = 0
-            };
         }
 
         public void StartProducing()
@@ -59,12 +52,12 @@ namespace Publisher
                         Value = new Payload
                         {
                             Key = key,
-                            ProducerId = _producerId.ToString(),
+                            ProducerId = _settings.ProducerId.ToString(),
                             Value = payload
                         }
                     };
 
-                    producer.Produce(_topic, message);
+                    producer.Produce(_settings.Topic, message);
                 }
 
                 producer.Flush(TimeSpan.FromSeconds(30));
