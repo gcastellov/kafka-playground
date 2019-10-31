@@ -45,7 +45,7 @@ namespace Subscriber
 
         private void Save(string key, Payload payload)
         {
-            string file = $"output\\{key}-{_settings.ConsumerId}.txt";
+            string file = $"{_settings.OutputPath}\\{key}-{_settings.ConsumerId}.txt";
             using TextWriter writer = File.AppendText(file);
             writer.WriteLine(payload.Value);
         }

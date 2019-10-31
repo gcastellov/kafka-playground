@@ -12,5 +12,8 @@ namespace Subscriber
 
         [Option('g', "group", Required = true, HelpText = "The consumer group the consumer belongs to")]
         public string ConsumerGroup { get; set; }
+
+        [Option('o', "output", Required = false, HelpText = "The path where to save the output files")]
+        public string OutputPath { get; set; }
     }
 }

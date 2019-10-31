@@ -14,7 +14,7 @@ namespace Subscriber
             Parser.Default.ParseArguments<Options>(args)
                 .WithParsed(o =>
                 {
-                    var settings = Settings.Create(ConsumerId, o.ConsumerGroup, o.Topic, o.Brokers);
+                    var settings = Settings.Create(ConsumerId, o.ConsumerGroup, o.Topic, o.Brokers, o.OutputPath);
                     var consumer = new Consumer(settings);
                     consumer.StartConsuming();
                 });
