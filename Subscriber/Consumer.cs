@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Confluent.Kafka;
@@ -10,11 +11,13 @@ namespace Subscriber
     {
         private readonly Settings _settings;
         private readonly ConsumerConfig _config;
+        private readonly IDictionary<string, string> _filePaths;
 
         public Consumer(Settings settings)
         {
             _settings = settings;
             _config = _settings.AsConsumerConfig();
+            _filePaths = new Dictionary<string, string>();
         }
 
         public void StartConsuming()
@@ -45,9 +48,19 @@ namespace Subscriber
 
         private void Save(string key, Payload payload)
         {
-            string file = $"{_settings.OutputPath}\\{key}-{_settings.ConsumerId}.txt";
+            SetFilePathIfNotExists(key);
+            var file = _filePaths[key];
             using TextWriter writer = File.AppendText(file);
             writer.WriteLine(payload.Value);
+        }
+
+        private void SetFilePathIfNotExists(string key)
+        {
+            if (!_filePaths.ContainsKey(key))
+            {
+                string file = Path.Combine(_settings.OutputPath, $"{key}-{_settings.ConsumerId}.txt");
+                _filePaths.Add(key, file);
+            }
         }
     }
 }
