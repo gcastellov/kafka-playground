@@ -5,6 +5,8 @@ services:
     image: confluentinc/cp-zookeeper:5.3.1
     hostname: zookeeper
     container_name: zookeeper
+    networks:
+      - kafka
     ports:
       - "2181:2181"
     environment:
@@ -15,6 +17,8 @@ services:
     image: confluentinc/cp-enterprise-kafka:5.3.1
     hostname: broker
     container_name: broker
+    networks:
+      - kafka
     depends_on:
       - zookeeper
     ports:
@@ -38,6 +42,8 @@ services:
     image: confluentinc/cp-schema-registry:5.3.1
     hostname: schema-registry
     container_name: schema-registry
+    networks:
+      - kafka
     depends_on:
       - zookeeper
       - broker
@@ -51,6 +57,8 @@ services:
     image: cnfldemos/kafka-connect-datagen:0.1.3-5.3.1
     hostname: connect
     container_name: connect
+    networks:
+      - kafka
     depends_on:
       - zookeeper
       - broker
@@ -86,6 +94,8 @@ services:
     image: confluentinc/cp-enterprise-control-center:5.3.1
     hostname: control-center
     container_name: control-center
+    networks:
+      - kafka
     depends_on:
       - zookeeper
       - broker
@@ -111,6 +121,8 @@ services:
     image: confluentinc/cp-ksql-server:5.3.1
     hostname: ksql-server
     container_name: ksql-server
+    networks:
+      - kafka
     depends_on:
       - broker
       - connect
@@ -130,6 +142,8 @@ services:
   ksql-cli:
     image: confluentinc/cp-ksql-cli:5.3.1
     container_name: ksql-cli
+    networks:
+      - kafka
     depends_on:
       - broker
       - connect
@@ -142,6 +156,8 @@ services:
     image: confluentinc/ksql-examples:5.3.1
     hostname: ksql-datagen
     container_name: ksql-datagen
+    networks:
+      - kafka
     depends_on:
       - ksql-server
       - broker
@@ -171,8 +187,14 @@ services:
       - 8082:8082
     hostname: rest-proxy
     container_name: rest-proxy
+    networks:
+      - kafka
     environment:
       KAFKA_REST_HOST_NAME: rest-proxy
       KAFKA_REST_BOOTSTRAP_SERVERS: 'broker:29092'
       KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
       KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
+
+networks:
+  kafka:
+    driver: bridge
